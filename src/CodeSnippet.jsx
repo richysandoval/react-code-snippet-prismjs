@@ -6,6 +6,8 @@ import Prism, { defaultProps } from "prism-react-renderer";
 import theme from "prism-react-renderer/themes/nightOwl";
 const editorStyles = {
   root: {
+    fontSize: "12px",
+    fontFamily: '"Dank Mono", "Fira Code", monospace',
     ...theme.plain
   }
 };
