@@ -6,7 +6,7 @@ import Prism, { defaultProps } from "prism-react-renderer";
 import theme from "prism-react-renderer/themes/nightOwl";
 const editorStyles = {
   root: {
-    fontSize: "12px",
+    boxSizing: "border-box",
     fontFamily: '"Dank Mono", "Fira Code", monospace',
     ...theme.plain
   }
@@ -20,23 +20,21 @@ class CodeSnippet extends React.Component {
       language: props.language,
       editable: props.editable
     };
+    this.getCode = this.getCode.bind(this);
+  }
+
+  getCode() {
+    return this.state.code;
   }
 
   onValueChange = (code) => {
-    this.setState({
-      code: code
-    });
+    this.setState({ code });
   };
 
-  nonEditable(code) {
+  nonEditable(code, language) {
     return (
       <div className="code-snippet-container">
-        <Prism
-          {...defaultProps}
-          theme={theme}
-          code={code}
-          language={this.state.language}
-        >
+        <Prism {...defaultProps} theme={theme} code={code} language={language}>
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={className} style={style}>
               {tokens.map((line, i) => (
@@ -53,7 +51,7 @@ class CodeSnippet extends React.Component {
     );
   }
 
-  editable(code) {
+  editable(code, language) {
     return (
       <Editor
         value={code}
@@ -65,31 +63,31 @@ class CodeSnippet extends React.Component {
   }
 
   highlight = (code) => (
-    <div className="code-snippet-container">
-      <Highlight
-        {...defaultProps}
-        theme={theme}
-        code={code}
-        language={this.state.language}
-      >
-        {({ tokens, getLineProps, getTokenProps }) => (
-          <Fragment>
-            {tokens.map((line, i) => (
-              <div {...getLineProps({ line, key: i })}>
-                {line.map((token, key) => (
-                  <span {...getTokenProps({ token, key })} />
-                ))}
-              </div>
-            ))}
-          </Fragment>
-        )}
-      </Highlight>
-    </div>
+    <Highlight
+      {...defaultProps}
+      theme={theme}
+      code={code}
+      language={this.state.language}
+    >
+      {({ tokens, getLineProps, getTokenProps }) => (
+        <Fragment>
+          {tokens.map((line, i) => (
+            <div {...getLineProps({ line, key: i })}>
+              {line.map((token, key) => (
+                <span {...getTokenProps({ token, key })} />
+              ))}
+            </div>
+          ))}
+        </Fragment>
+      )}
+    </Highlight>
   );
 
   render() {
-    const { code, editable } = this.state;
-    return editable ? this.editable(code) : this.nonEditable(code);
+    const { code, language, editable } = this.state;
+    return editable
+      ? this.editable(code, language)
+      : this.nonEditable(code, language);
   }
 }
 
